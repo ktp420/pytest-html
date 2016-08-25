@@ -375,7 +375,7 @@ class HTMLReport(object):
         if self.self_contained:
             html_script = html.script(raw(self.main_js))
         else:
-            html_script = html.script(src="asserts/main.js", type="text/javascript")
+            html_script = html.script(src="assets/main.js", type="text/javascript")
 
         body = html.body(
             html_script,
