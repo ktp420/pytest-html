@@ -367,13 +367,18 @@ class HTMLReport(object):
             id='results-table-head'),
                 self.test_logs],  id='results-table')]
 
-        main_js = pkg_resources.resource_string(
+        self.main_js = pkg_resources.resource_string(
             __name__, os.path.join('resources', 'main.js'))
         if PY3:
-            main_js = main_js.decode('utf-8')
+            self.main_js = main_js.decode('utf-8')
+
+        if self.self_contained:
+            html_script = html.script(raw(self.main_js))
+        else:
+            html_script - html.script(src="asserts/main.js", type="text/javascript")
 
         body = html.body(
-            html.script(raw(main_js)),
+            html_script,
             html.p('Report generated on {0} at {1}'.format(
                 generated.strftime('%d-%b-%Y'),
                 generated.strftime('%H:%M:%S'))))
@@ -414,6 +419,10 @@ class HTMLReport(object):
             style_path = os.path.join(assets_dir, 'style.css')
             with open(style_path, 'w', encoding='utf-8') as f:
                 f.write(self.style_css)
+            script_path = os.path.join(assets_dir, 'main.js')
+            with open(script_path, 'w', encoding='utf-8') as f:
+                f.write(self.main_js)
+
 
     def pytest_runtest_logreport(self, report):
         if report.passed:
