@@ -314,7 +314,7 @@ class HTMLReport(object):
 
                 self.checkbox = html.input(type='checkbox',
                                            checked='true',
-                                           onChange='filter_table(this)',
+                                           # onChange='filter_table(this)',
                                            name='filter_checkbox',
                                            class_='filter',
                                            hidden='true',

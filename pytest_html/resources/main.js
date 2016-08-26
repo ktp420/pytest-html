@@ -72,8 +72,10 @@ function add_collapse() {
     // Add links for show/hide all
     var resulttable = find('table#results-table');
     var showhideall = document.createElement("p");
-    showhideall.innerHTML = '<a href="javascript:show_all_extras()">Show all details</a> / ' +
-                            '<a href="javascript:hide_all_extras()">Hide all details</a>';
+    showhideall.innerHTML = '<a id="showAll" href="#">Show all details</a> / ' +
+                            '<a id="hideAll" href="#">Hide all details</a>';
+    find('#showAll', showhideall).onclick = show_all_extras;
+    find('#hideAll', showhideall).onclick = hide_all_extras;
     resulttable.parentElement.insertBefore(showhideall, resulttable);
 
     // Add show/hide link to each result
@@ -95,7 +97,13 @@ function add_collapse() {
                 hide_extras(event.currentTarget);
             }
         });
-    })
+    });
+
+    find_all('input.filter').forEach(function(elem) {
+        elem.removeAttribute('onchange');
+        elem.onchange = function(event) { filter_table(event.currentTarget); };
+    });
+
 }
 addEventListener("DOMContentLoaded", function() {
     reset_sort_headers();
