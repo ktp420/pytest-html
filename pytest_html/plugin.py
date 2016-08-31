@@ -136,7 +136,7 @@ class HTMLReport(object):
             return order.index(self.outcome) < order.index(other.outcome)
 
         def create_asset(self, content, extra_index,
-                         test_index, file_extension):
+                         test_index, file_extension, encoding=None):
             hash_key = ''.join([self.test_id, str(extra_index),
                                str(test_index)]).encode('utf-8')
             hash_generator = hashlib.md5()
@@ -150,7 +150,7 @@ class HTMLReport(object):
 
             relative_path = '{0}/{1}'.format('assets', asset_file_name)
 
-            with open(asset_path, 'w') as f:
+            with open(asset_path, 'wb', encoding=encoding) as f:
                 f.write(content)
             return relative_path
 
@@ -195,6 +195,12 @@ class HTMLReport(object):
 
             elif extra.get('format') == extras.FORMAT_URL:
                 href = extra.get('content')
+
+            # generic asset that we just save and server as uri
+            else:
+                href = self.create_asset(extra.get('content'), extra_index,
+                                         test_index, extra.get('format'),
+                                         encoding='utf-8')
 
             if href is not None:
                 self.links_html.append(html.a(
