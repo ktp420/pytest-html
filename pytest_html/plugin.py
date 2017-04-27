@@ -202,6 +202,11 @@ class HTMLReport(object):
             elif extra.get('format') == extras.FORMAT_URL:
                 href = extra.get('content')
 
+            # generic asset that we just save and server as uri
+            else:
+                href = self.create_asset(extra.get('content'), extra_index,
+                                         test_index, extra.get('format'))
+
             if href is not None:
                 self.links_html.append(html.a(
                     extra.get('name'),
@@ -340,7 +345,7 @@ class HTMLReport(object):
 
                 self.checkbox = html.input(type='checkbox',
                                            checked='true',
-                                           onChange='filter_table(this)',
+                                           # onChange='filter_table(this)',
                                            name='filter_checkbox',
                                            class_='filter',
                                            hidden='true',
@@ -394,13 +399,18 @@ class HTMLReport(object):
             id='results-table-head'),
                 self.test_logs], id='results-table')]
 
-        main_js = pkg_resources.resource_string(
+        self.main_js = pkg_resources.resource_string(
             __name__, os.path.join('resources', 'main.js'))
         if PY3:
-            main_js = main_js.decode('utf-8')
+            self.main_js = main_js.decode('utf-8')
+
+        if self.self_contained:
+            html_script = html.script(raw(self.main_js))
+        else:
+            html_script = html.script(src="assets/main.js", type="text/javascript")
 
         body = html.body(
-            html.script(raw(main_js)),
+            html_script,
             html.p('Report generated on {0} at {1} by'.format(
                 generated.strftime('%d-%b-%Y'),
                 generated.strftime('%H:%M:%S')),
@@ -454,6 +464,10 @@ class HTMLReport(object):
             style_path = os.path.join(assets_dir, 'style.css')
             with open(style_path, 'w', encoding='utf-8') as f:
                 f.write(self.style_css)
+            script_path = os.path.join(assets_dir, 'main.js')
+            with open(script_path, 'w', encoding='utf-8') as f:
+                f.write(self.main_js)
+
 
     def pytest_runtest_logreport(self, report):
         if report.passed:
